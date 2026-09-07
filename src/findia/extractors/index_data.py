@@ -32,7 +32,10 @@ class LocalIndexExtractor:
         # Map logical index tickers to their downloaded NSE Excel filenames
         self.file_map = {
             "NIFTY_MIDCAP_150": "3_NIFTY_MIDCAP150_HISTORICAL.xlsx",
-            "NIFTY_50": "1_NIFTY50_HISTORICAL.xlsx"  # Ready for when you download Nifty 50
+            "NIFTY_50": "1_NIFTY50_HISTORICAL.xlsx", 
+            "NIFTY_NEXT50": "2_NIFTY_NEXT50_HISTORICAL.xlsx",
+            "NIFTY_SMALLCAP_250":"4_NIFTY_SMALLCAP150_HISTORICAL.xlsx",
+            "NIFTY_500":"5_NIFTY500_HISTORICAL.xlsx"
         }
 
     def _calculate_start_date(self, period: str, end_date: datetime) -> datetime:

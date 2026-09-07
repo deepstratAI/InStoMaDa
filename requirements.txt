@@ -14,3 +14,5 @@ bs4
 google-generativeai 
 pillow
 dateutil
+xlsxwriter
+matplotlib

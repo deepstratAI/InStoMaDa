@@ -24,8 +24,11 @@ from findia import (
     LocalIndexExtractor
 )
 
+# Phase 2 Imports
+from findia.transform.stock import StockAnalytics
 
-def run_pipeline(ticker: str = "EMMVEE"):
+
+def run_pipeline(ticker: str = "EMMVEE", benchmark_index: str = "NIFTY_MIDCAP_150"):
     print(f"\n==================================================")
     print(f"   Starting Full FinDia Analysis for: {ticker}")
     print(f"==================================================")
@@ -39,7 +42,7 @@ def run_pipeline(ticker: str = "EMMVEE"):
     exporter = DataExporter(output_dir=output_dir)
 
     # 1. Price Action Extraction
-    print(f"\n[1/3] Extracting Price Action Data (yfinance)...")
+    print(f"\n[1/6] Extracting Price Action Data (yfinance)...")
     price_engine = PriceExtractor()
     df_price = price_engine.fetch_ohlcv(tickers=ticker, interval="1d", period="2y")
     if not df_price.empty:
@@ -47,22 +50,21 @@ def run_pipeline(ticker: str = "EMMVEE"):
         print(f"      Successfully saved Price Action data.")
 
     # 2. Annual Fundamentals Extraction
-    print(f"\n[2/3] Extracting Annual Financials (Screener.in)...")
+    print(f"\n[2/6] Extracting Annual Financials (Screener.in)...")
     annual_engine = ScreenerAnnualEngine()
     annual_engine.export_to_excel(ticker=ticker, output_dir=output_dir)
     print(f"      Successfully saved Annual Statements.")
 
     # 3. Quarterly Fundamentals Extraction
-    print(f"\n[3/3] Extracting Quarterly Financials & Growth (Screener.in)...")
+    print(f"\n[3/6] Extracting Quarterly Financials & Growth (Screener.in)...")
     quarterly_engine = ScreenerQuarterlyEngine()
     quarterly_engine.export_to_excel(ticker=ticker, output_dir=output_dir)
     print(f"      Successfully saved Quarterly & Growth Statements.")
 
     # 4. Multimodal Vision Extraction (Financial Statements)
-    print(f"\n[4/4] Extracting Financial Statements from Images (Gemini Vision)...")
+    print(f"\n[4/6] Extracting Financial Statements from Images (Gemini Vision)...")
     input_dir = Path("data/input")
     
-    # Fault-tolerant check: Only run if the directory exists and has files
     if input_dir.exists() and any(input_dir.iterdir()):
         vision_engine = VisionExtractor()
         financial_tables = vision_engine.process_input_directory(str(input_dir))
@@ -81,26 +83,15 @@ def run_pipeline(ticker: str = "EMMVEE"):
     # =====================================================================
     # 5. Market Index Data Extraction (Local Excel)
     # =====================================================================
-    print(f"\n[5/5] Extracting Market Index Data (Local Excel)...")
-    
-    # Engine Initialization: Points to the local directory containing the NSE Excel files.
+    print(f"\n[5/6] Extracting Market Index Data (Local Excel)...")
     index_engine = LocalIndexExtractor(data_dir="data/nse_data")
     
-    # ---------------------------------------------------------------------
-    # CONFIGURATION REFERENCE:
-    # - tickers: List of index names matching the keys in LocalIndexExtractor.file_map 
-    #            (e.g., ["NIFTY_MIDCAP_150", "NIFTY_50"])
-    # - interval: Bar frequency. Allowed values: "1d", "1wk", "1mo"
-    # - period: Lookback window. Allowed values: "1mo", "3mo", "6mo", "1y", "2y", "5y", "10y", "max"
-    #           (Note: 'period' is ignored if start_date and end_date are explicitly provided)
-    # - start_date / end_date: Explicit date strings in 'YYYY-MM-DD' format (Optional)
-    # ---------------------------------------------------------------------
-    target_indices = ["NIFTY_MIDCAP_150"]
+    target_indices = [benchmark_index]
     
     df_indices = index_engine.fetch_historical_data(
         tickers=target_indices,
-        interval="1mo",   # Aggregates to end-of-month Close/TRI
-        period="5y"       # 5-year historical lookback
+        interval="1mo",   
+        period="5y"       
     )
     
     if not df_indices.empty:
@@ -112,10 +103,35 @@ def run_pipeline(ticker: str = "EMMVEE"):
     else:
         print("      Skipping: No valid index data found in data/nse_data/")
 
+    # =====================================================================
+    # 6. Phase 2: Quantitative Transformation & Risk Analytics
+    # =====================================================================
+    print(f"\n[6/6] Executing Phase 2: Quantitative Risk & Transformation Engine...")
+    
+    # ---------------------------------------------------------------------
+    # CONFIGURATION REFERENCE:
+    # - period: Lookback window for risk metrics (e.g., "1y", "2y", "5y", "max")
+    # - interval: Bar frequency for calculations ("1d", "1wk", "1mo")
+    # Note: Target stock and benchmark index are passed via function args.
+    # ---------------------------------------------------------------------
+    analysis_period = "2y"
+    analysis_interval = "1wk"
+    
+    analytics_engine = StockAnalytics()
+    analytics_engine.generate_pipeline_report(
+        ticker=ticker,
+        index_ticker=benchmark_index,
+        period=analysis_period,
+        interval=analysis_interval,
+        output_dir=output_dir
+    )
+    print(f"      Successfully generated Quantitative Summary & Underwater Curve for {ticker}.")
+
     print(f"\n==================================================")
     print(f" Pipeline Complete! Files saved to: {output_dir.resolve()}")
     print(f"==================================================\n")
 
 
 if __name__ == "__main__":
-    run_pipeline("GENUSPOWER")
+    # Test execution using GENUSPOWER vs NIFTY_50
+    run_pipeline(ticker="GENUSPOWER", benchmark_index="NIFTY_500")

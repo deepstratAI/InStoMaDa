@@ -170,3 +170,49 @@ Fetches historical Open, High, Low, Close, Volume data.
 | `input_dir` | `str` | **Required** | Directory containing image files. |
 
 **Returns:** `Dict[str, pd.DataFrame]` where keys are dynamically derived from image filenames (truncated to 31 characters for Excel tab compatibility).
+
+## 5. Quantitative Transformation & Risk Analytics (Phase 2)
+
+**Module:** `findia.transform.stock`  
+**Class:** `StockAnalytics`  
+**Purpose:** Asset-level quantitative transformation engine. Calculates dynamic risk (Calendar CAGR, Volatility, Sharpe, Sortino), runs OLS Beta regression against a Total Returns Index (TRI), and generates visual underwater curves.
+
+### `__init__`
+| Argument | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `risk_free_rate` | `float` | `0.07` | Default risk-free rate used for Sharpe and Sortino calculations (7% representing approx. Indian 10Y G-Sec). |
+
+### `generate_pipeline_report`
+Orchestrates Phase 1 extraction, Phase 2 transformation, and exports dual-layer tables (summary + raw datasets) and charts.
+
+| Argument | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `ticker` | `str` | **Required** | Target stock ticker symbol. |
+| `index_ticker` | `str` | **Required** | Benchmark index symbol (must map to local NSE TRI data keys). |
+| `period` | `str` | **Required** | Lookback window (e.g., `"2y"`, `"5y"`). |
+| `interval` | `str` | **Required** | Bar frequency. Used to dynamically align Beta regression (e.g., `"1wk"` automatically aligns to Fridays). |
+| `output_dir` | `str` | **Required** | Target directory for the generated outputs. |
+
+**Returns:** `None`. Writes `{TICKER}_Pipeline_Summary.xlsx` and `{TICKER}_Underwater_Curve.png` directly to disk.
+
+### `calculate_risk_metrics`
+| Argument | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `prices_df` | `pd.DataFrame` | **Required** | Price action DataFrame containing a `Close` column. |
+| `interval` | `str` | **Required** | Data frequency used to determine the mathematical annualization factor. |
+| `period` | `str` | **Required** | Lookback period used purely for audit logging. |
+
+**Returns:** `Tuple[pd.DataFrame, pd.DataFrame]` containing the Risk Summary table and the raw historical dataset.
+
+### `calculate_market_beta`
+Runs an OLS regression, automatically isolating the Total Returns Index and dynamically resampling both arrays to ensure perfect date alignment.
+
+| Argument | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `stock_df` | `pd.DataFrame` | **Required** | Target stock price data. |
+| `index_df` | `pd.DataFrame` | **Required** | Benchmark index data. |
+| `stock_ticker`| `str` | **Required** | Name of the stock for column and audit labeling. |
+| `index_ticker`| `str` | **Required** | Name of the index for column and audit labeling. |
+| `interval` | `str` | **Required** | Frequency used to dynamically resample and align the time-series arrays. |
+
+**Returns:** `Tuple[pd.DataFrame, pd.DataFrame]` containing the Regression Summary table and the aligned historical returns array.

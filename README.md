@@ -78,10 +78,28 @@ df_indices = index_engine.fetch_historical_data(
     period="5y"
 )
 
-#### Update 3: Clean up and Update the Project Structure
-At the very bottom of your `README.md`, replace the entire corrupted `## 📁 Project Structure` section (from line 49 downwards) with this clean, updated version that includes `index_data.py`:
 
-```markdown
+```
+
+## 🧮 Quantitative Transformation & Risk Analytics (Phase 2)
+Transform raw price action and fundamental data into institutional-grade risk metrics. Calculates Calendar CAGR, Annualized Volatility, Sharpe/Sortino ratios, and runs dynamic OLS regression for Market Beta against a Total Returns Index (TRI). Automatically generates visual Underwater Curves.
+
+```python
+from findia.transform.stock import StockAnalytics
+
+# Initialize the transformation engine
+analytics_engine = StockAnalytics()
+
+# Generate a unified multi-tab Excel report and Drawdown .png chart
+analytics_engine.generate_pipeline_report(
+    ticker="RELIANCE",
+    index_ticker="NIFTY_50",    # Mapped to local TRI data
+    period="2y",                # Lookback window
+    interval="1wk",             # Dynamic alignment frequency for Beta
+    output_dir="data/pipeline_output"
+)
+```
+
 ## 📁 Project Structure
 
 ```text
@@ -99,6 +117,8 @@ InStoMaDa/
 │   │   └── exporter.py        # Excel & workspace writer
 │   ├── models/                # Schema definitions & Pydantic models
 │   └── transform/             # Quantitative analysis engine (Phase 2)
+│       ├── __init__.py        
+│       └── stock.py           # Asset-level Risk, Beta, and Drawdown engine
 ├── data/                      # Local output workspace for exported reports
 │   ├── input/                 # Staging folder for image ingestion
 │   ├── nse_data/              # Staging folder for local NSE index Excel files
