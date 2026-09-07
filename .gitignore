@@ -11,5 +11,8 @@ __pycache__/
 *.pyc
 
 # Data & Outputs
-data/
-*.xlsx 
+# Ignore everything inside the data folder by default (outputs, images, etc.)
+data/*
+
+# EXCEPT for the nse_data folder and its contents (required for open-source users)
+!data/nse_data/ 
