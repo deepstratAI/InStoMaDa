@@ -1,0 +1,16 @@
+# File: requirements.txt
+pandas
+numpy
+yfinance
+nsepython
+requests
+beautifulsoup4
+pydantic
+python-dotenv 
+openpyxl
+lxml
+html5lib
+bs4
+google-generativeai 
+pillow
+dateutil
