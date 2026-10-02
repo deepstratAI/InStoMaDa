@@ -28,7 +28,7 @@ from findia import (
 from findia.transform.stock import StockAnalytics
 
 
-def run_pipeline(ticker: str = "EMMVEE", benchmark_index: str = "NIFTY_MIDCAP_150"):
+def run_pipeline(ticker: str = "FIEMIND", benchmark_index: str = "NIFTY_500"):
     print(f"\n==================================================")
     print(f"   Starting Full FinDia Analysis for: {ticker}")
     print(f"==================================================")
@@ -44,7 +44,7 @@ def run_pipeline(ticker: str = "EMMVEE", benchmark_index: str = "NIFTY_MIDCAP_15
     # 1. Price Action Extraction
     print(f"\n[1/6] Extracting Price Action Data (yfinance)...")
     price_engine = PriceExtractor()
-    df_price = price_engine.fetch_ohlcv(tickers=ticker, interval="1d", period="2y")
+    df_price = price_engine.fetch_ohlcv(tickers=ticker, interval="1wk", period="2y")
     if not df_price.empty:
         exporter.to_excel(df_price, filename=f"{ticker}_Price_Action.xlsx")
         print(f"      Successfully saved Price Action data.")
@@ -133,5 +133,5 @@ def run_pipeline(ticker: str = "EMMVEE", benchmark_index: str = "NIFTY_MIDCAP_15
 
 
 if __name__ == "__main__":
-    # Test execution using GENUSPOWER vs NIFTY_50
-    run_pipeline(ticker="GENUSPOWER", benchmark_index="NIFTY_500")
+    # Test execution using FIEMIND vs NIFTY_500
+    run_pipeline(ticker="FIEMIND", benchmark_index="NIFTY_500")
