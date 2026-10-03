@@ -5,10 +5,10 @@ yfinance
 nsepython
 requests
 beautifulsoup4
+lxml
 pydantic
 python-dotenv 
 openpyxl
-lxml
 html5lib
 bs4
 google-generativeai 
@@ -16,3 +16,4 @@ pillow
 dateutil
 xlsxwriter
 matplotlib
+playwright

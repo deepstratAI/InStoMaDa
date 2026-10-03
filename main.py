@@ -19,6 +19,8 @@ from findia import (
     PriceExtractor,
     ScreenerAnnualEngine,
     ScreenerQuarterlyEngine,
+    ScreenerAnnualFullEngine,
+    ScreenerQuarterlyFullEngine,
     DataExporter,
     VisionExtractor,
     LocalIndexExtractor
@@ -49,17 +51,29 @@ def run_pipeline(ticker: str = "FIEMIND", benchmark_index: str = "NIFTY_500"):
         exporter.to_excel(df_price, filename=f"{ticker}_Price_Action.xlsx")
         print(f"      Successfully saved Price Action data.")
 
-    # 2. Annual Fundamentals Extraction
-    print(f"\n[2/6] Extracting Annual Financials (Screener.in)...")
+    # 2a. Annual Fundamentals Extraction - Abridged
+    print(f"\n[2/6] Extracting Annual Financials -- Abridged (Screener.in)...")
     annual_engine = ScreenerAnnualEngine()
     annual_engine.export_to_excel(ticker=ticker, output_dir=output_dir)
-    print(f"      Successfully saved Annual Statements.")
+    print(f"      Successfully saved Abridged Annual Statements.")
 
-    # 3. Quarterly Fundamentals Extraction
-    print(f"\n[3/6] Extracting Quarterly Financials & Growth (Screener.in)...")
+    # 2b. Annual Fundamentals Extraction (Full Level 2)
+    print(f"\n[2b/8] Extracting Annual Financials - FULL Level 2 (Playwright Render)...")
+    annual_full_engine = ScreenerAnnualFullEngine(headless=True)
+    annual_full_engine.export_to_excel(ticker=ticker, output_dir=output_dir)
+    print(f"      Successfully saved FULL Annual Statements.")
+
+    # 3a. Quarterly Fundamentals Extraction - Abridged
+    print(f"\n[3/6] Extracting Quarterly Financials & Growth Abridged (Screener.in)...")
     quarterly_engine = ScreenerQuarterlyEngine()
     quarterly_engine.export_to_excel(ticker=ticker, output_dir=output_dir)
-    print(f"      Successfully saved Quarterly & Growth Statements.")
+    print(f"      Successfully saved Quarterly & Growth Statements - Abridged.")
+
+    # 3b. Quarterly Fundamentals Extraction (Full Level 2)
+    print(f"\n[3b/8] Extracting Quarterly Financials & Shareholding - FULL Level 2 (Playwright Render)...")
+    quarterly_full_engine = ScreenerQuarterlyFullEngine(headless=True)
+    quarterly_full_engine.export_to_excel(ticker=ticker, output_dir=output_dir)
+    print(f"      Successfully saved FULL Quarterly & Shareholding Statements.")
 
     # 4. Multimodal Vision Extraction (Financial Statements)
     print(f"\n[4/6] Extracting Financial Statements from Images (Gemini Vision)...")

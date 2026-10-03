@@ -23,11 +23,17 @@ Built for quantitative analysts and financial engineers, FinDia provides a unifi
 Extract a complete quantitative profile for a company—including historical price action, annual financial statements, and quarterly earnings—in just a few lines of code.
 
 ```python
-from findia import PriceExtractor, ScreenerAnnualEngine, ScreenerQuarterlyEngine, DataExporter
+from findia import (
+    PriceExtractor, 
+    ScreenerAnnualEngine, 
+    ScreenerAnnualFullEngine,
+    DataExporter
+)
 
 # 1. Initialize Engines
 price_engine = PriceExtractor()
-annual_engine = ScreenerAnnualEngine()
+annual_abridged_engine = ScreenerAnnualEngine()
+annual_full_engine = ScreenerAnnualFullEngine(headless=True)
 exporter = DataExporter(output_dir="data/exports")
 
 ticker = "RELIANCE"
@@ -36,8 +42,11 @@ ticker = "RELIANCE"
 df_price = price_engine.fetch_ohlcv(tickers=ticker, interval="1d", period="2y")
 exporter.to_excel(df_price, filename=f"{ticker}_Price_Action.xlsx")
 
-# 3. Extract & Export Clean Annual Fundamentals (P&L, Balance Sheet, Cash Flow)
-annual_engine.export_to_excel(ticker=ticker, reporting_level="consolidated", output_dir="data/exports")
+# 3a. Extract & Export Clean Annual Fundamentals (Abridged)
+annual_abridged_engine.export_to_excel(ticker=ticker, reporting_level="consolidated", output_dir="data/exports")
+
+# 3b. Extract & Export Full Level 2 Annual Fundamentals (Playwright Render)
+annual_full_engine.export_to_excel(ticker=ticker, reporting_level="consolidated", output_dir="data/exports")
 ```
 
 ### 📸 Multimodal Vision Extraction (Annual Reports & Scanned Files)

@@ -94,6 +94,35 @@ Fetches historical Open, High, Low, Close, Volume data.
 **Returns:** `pathlib.Path` pointing to the generated Excel file.
 
 ---
+---
+### Full Level 2 Engine (Playwright Visual Render)
+
+**Module:** `findia.extractors.screener_annual_full` & `findia.extractors.screener_quarterly_full`  
+**Classes:** `ScreenerAnnualFullEngine`, `ScreenerQuarterlyFullEngine`  
+**Purpose:** Utilizes a headless Chromium browser (Playwright) to interactively expand all Level 2 schedule breakdowns (`+` buttons) across financial statements and shareholding patterns before extracting the full DOM.
+
+#### `__init__`
+| Argument | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `headless` | `bool` | `True` | Runs the Playwright browser without a GUI. Set to `False` for debugging visual rendering. |
+| `timeout_ms`| `int` | `20000`| Maximum wait time (in milliseconds) for the page to load before timing out. |
+
+#### `fetch_and_clean` / `fetch_quarterly_data`
+| Argument | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `ticker` | `str` | **Required** | Stock ticker symbol. |
+| `reporting_level`| `str` | `"consolidated"` | Toggle between `"consolidated"` or `"standalone"`. |
+
+**Returns:** `Dict[str, pd.DataFrame]` containing heavily detailed financial tables. Level 2 child line items are automatically prefixed with `"  - "` to preserve visual hierarchy.
+
+#### `export_to_excel`
+| Argument | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `ticker` | `str` | **Required** | Stock ticker symbol. |
+| `reporting_level`| `str` | `"consolidated"` | Toggle between `"consolidated"` or `"standalone"`. |
+| `output_dir` | `str` | `"data"` | Target directory. Exports `{TICKER}_Clean_[Annual/Quarterly]_Full_Fundamentals.xlsx`. |
+
+**Returns:** `pathlib.Path` pointing to the generated Excel file.
 
 ## 3. Data Loaders & Exporting
 

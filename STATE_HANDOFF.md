@@ -4,15 +4,17 @@
 
 ### Completed Architecture (Phase 1 - Ingestion & Extraction)
 1. **Market Data Engine (`market_data.py`):** `PriceExtractor` class fetching yfinance OHLCV data with `.NS`/`.BO` auto-formatting.
-2. **Annual Fundamental Engine (`screener_annual.py`):** `ScreenerAnnualEngine` extracting multi-year P&L, Balance Sheet, Cash Flow, Ratios, and Shareholding from Screener.in.
-3. **Quarterly Fundamental Engine (`screener_quarterly.py`):** `ScreenerQuarterlyEngine` extracting ~10-12 quarters of income statements and CAGR growth tables.
-4. **Core Financial Vision Engine (`financial_statement_extractor.py`):** `VisionExtractor` using Gemini 2.5 Vision with structured 2D JSON schemas to parse `balance_sheet.png`, `income_statement.png`, `cash_flow.png`.
-5. **Generic Vision Engine (`generic_vision_extractor.py`):** `GenericVisionExtractor` parsing arbitrary annual report images/notes into named Excel tabs.
-6. **Local Index Engine (`index_data.py`):** `LocalIndexExtractor` that parses local NSE Excel files to extract benchmark Total Returns Index (TRI) and Close data, completely bypassing rate limits.
-7. **Workspace Loader (`exporter.py`):** `DataExporter` writing multi-tab Excel workbooks to `data/pipeline_output/`.
-8. **Package Facade (`src/findia/__init__.py`):** Unified top-level imports enabled (`from findia import PriceExtractor, VisionExtractor, ...`).
+2. **Annual Fundamental Engine (`screener_annual.py`):** `ScreenerAnnualEngine` extracting abridged multi-year P&L, Balance Sheet, Cash Flow, Ratios, and Shareholding.
+3. **Full Annual Engine (`screener_annual_full.py`):** `ScreenerAnnualFullEngine` using Playwright to extract Level 2 schedule breakdowns.
+4. **Quarterly Fundamental Engine (`screener_quarterly.py`):** `ScreenerQuarterlyEngine` extracting abridged quarterly income statements and CAGR growth tables.
+5. **Full Quarterly Engine (`screener_quarterly_full.py`):** `ScreenerQuarterlyFullEngine` using Playwright to extract Level 2 quarterly P&L and granular institutional shareholding breakdowns.
+6. **Core Financial Vision Engine (`financial_statement_extractor.py`):** `VisionExtractor` using Gemini 2.5 Vision with structured 2D JSON schemas to parse `balance_sheet.png`, `income_statement.png`, `cash_flow.png`.
+7. **Generic Vision Engine (`generic_vision_extractor.py`):** `GenericVisionExtractor` parsing arbitrary annual report images/notes into named Excel tabs.
+8. **Local Index Engine (`index_data.py`):** `LocalIndexExtractor` that parses local NSE Excel files to extract benchmark Total Returns Index (TRI) and Close data, completely bypassing rate limits.
+9. **Workspace Loader (`exporter.py`):** `DataExporter` writing multi-tab Excel workbooks to `data/pipeline_output/`.
+10. **Package Facade (`src/findia/__init__.py`):** Unified top-level imports enabled (`from findia import PriceExtractor, VisionExtractor, ...`).
 ### Completed Architecture (Phase 2 - Transformation Engine - Partial)
-9. **Single-Asset Analytics Engine (`stock.py`):** `StockAnalytics` class calculating Calendar CAGR, Annualized Volatility, Sharpe/Sortino ratios, dynamic Market Beta (OLS against TRI), and generating visual Underwater Curves.
+11. **Single-Asset Analytics Engine (`stock.py`):** `StockAnalytics` class calculating Calendar CAGR, Annualized Volatility, Sharpe/Sortino ratios, dynamic Market Beta (OLS against TRI), and generating visual Underwater Curves.
 
 ### Key Design Principles & Guardrails
 - **Environment Management:** Secrets loaded via `python-dotenv` from `.env`. Never commit keys.
